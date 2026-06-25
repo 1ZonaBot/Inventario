@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inventario</title>
+
+<style>
+body{
+font-family:Arial,sans-serif;
+padding:20px;
+background:#f5f5f5;
+}
+
+input{
+width:100%;
+padding:12px;
+font-size:16px;
+margin-bottom:15px;
+}
+
+.card{
+background:white;
+padding:15px;
+margin-bottom:10px;
+border-radius:10px;
+box-shadow:0 2px 5px rgba(0,0,0,.1);
+}
+</style>
+</head>
+
+<body>
+
+<h2>📦 Inventario</h2>
+
+<input
+type="text"
+id="buscar"
+placeholder="Buscar referencia, marca o detalle..."
+onkeyup="buscarProducto()">
+
+<div id="resultados"></div>
+
+<script>
+
+const productos = [
+
+{
+referencia:"XB450",
+marca:"Sony",
+detalle:"Audifono",
+cantidad:12,
+precio:120000
+},
+
+{
+referencia:"JBLGO3",
+marca:"JBL",
+detalle:"Parlante",
+cantidad:5,
+precio:180000
+}
+
+];
+
+function mostrar(lista){
+
+let html="";
+
+lista.forEach(p=>{
+
+html+=`
+<div class="card">
+<b>${p.detalle}</b><br>
+Referencia: ${p.referencia}<br>
+Marca: ${p.marca}<br>
+Cantidad: ${p.cantidad}<br>
+Precio: $${p.precio}
+</div>
+`;
+
+});
+
+document.getElementById("resultados").innerHTML=html;
+
+}
+
+function buscarProducto(){
+
+const texto=document
+.getElementById("buscar")
+.value
+.toLowerCase();
+
+const filtrados=productos.filter(p=>
+
+p.referencia.toLowerCase().includes(texto) ||
+p.marca.toLowerCase().includes(texto) ||
+p.detalle.toLowerCase().includes(texto)
+
+);
+
+mostrar(filtrados);
+
+}
+
+mostrar(productos);
+
+</script>
+
+</body>
+</html>
