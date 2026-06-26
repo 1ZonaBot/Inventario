@@ -10,6 +10,7 @@ Papa.parse(URL, {
     complete: function(resultado) {
 
         inventario = resultado.data;
+        console.log(inventario[0]);
 
         mostrarProductos(inventario);
 
