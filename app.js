@@ -61,7 +61,7 @@ function mostrarProductos(lista){
 
             <p class="${clase}"><b>Cantidad:</b> ${cantidad}</p>
 
-            <p><b>Precio:</b> $${p["Precio unidad"]}</p>
+            <p><b>Precio:</b> $${Object.values(p)[7]}</p>
 
         </div>
 
