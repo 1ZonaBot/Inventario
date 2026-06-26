@@ -1,93 +1,67 @@
-const URL =
-"https://docs.google.com/spreadsheets/d/e/2PACX-1vTb0YfNfUNBNu606Dum1baz-ZjB-vYfNcN6i5bMS7wEIO7VnoAYYAjtWoKqTwoeAUQy7Y5Lp8b4tmvq/pub?gid=1161484818&single=true&output=csv";
+const URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTb0YfNfUNBNu606Dum1baz-ZjB-vYfNcN6i5bMS7wEIO7VnoAYYAjtWoKqTwoeAUQy7Y5Lp8b4tmvq/pub?gid=1161484818&single=true&output=csv";
 
 let inventario = [];
 
-async function cargarInventario() {
-    try {
+Papa.parse(URL, {
+    download: true,
+    header: true,
+    skipEmptyLines: true,
 
-        const respuesta = await fetch(URL);
-        const texto = await respuesta.text();
+    complete: function(resultado) {
 
-        const filas = texto.trim().split("\n");
-
-        inventario = filas.slice(1).map(fila => {
-
-            const c = fila.split(",");
-
-            return {
-
-                tipo: c[0] || "",
-                detalle: c[1] || "",
-                referencia: c[2] || "",
-                entrada: c[3] || "",
-                marca: c[4] || "",
-                cantidad: Number(c[5]) || 0,
-                color: c[6] || "",
-                precio: c[7] || ""
-
-            };
-
-        });
+        inventario = resultado.data;
 
         mostrarProductos(inventario);
 
-    } catch (e) {
+    },
 
-        document.getElementById("productos").innerHTML =
-        "<p>Error cargando inventario.</p>";
+    error: function(err) {
 
-        console.error(e);
+        console.log(err);
 
     }
 
-}
+});
 
 function mostrarProductos(lista){
 
-    const contenedor=document.getElementById("productos");
+    const contenedor = document.getElementById("productos");
 
-    contenedor.innerHTML="";
-
-    if(lista.length===0){
-
-        contenedor.innerHTML="<p>No se encontraron productos.</p>";
-
-        return;
-
-    }
+    contenedor.innerHTML = "";
 
     lista.forEach(p=>{
 
+        let cantidad = Number(p["Cantidad"]) || 0;
+
         let clase="verde";
 
-        if(p.cantidad<=0){
+        if(cantidad<=0){
 
             clase="rojo";
 
-        }else if(p.cantidad<=5){
+        }else if(cantidad<=5){
 
             clase="amarillo";
 
         }
 
-        contenedor.innerHTML+=`
+        contenedor.innerHTML += `
 
         <div class="tarjeta">
 
-            <h2>${p.detalle}</h2>
+            <h2>${p["Detalle"]}</h2>
 
-            <p><b>Tipo:</b> ${p.tipo}</p>
+            <p><b>Tipo:</b> ${p["Tipo"]}</p>
 
-            <p><b>Referencia:</b> ${p.referencia}</p>
+            <p><b>Referencia:</b> ${p["Referencia"]}</p>
 
-            <p><b>Marca:</b> ${p.marca}</p>
+            <p><b>Marca:</b> ${p["Marca"]}</p>
 
-            <p><b>Color:</b> ${p.color}</p>
+            <p><b>Color:</b> ${p["Color"]}</p>
 
-            <p class="stock ${clase}"><b>Cantidad:</b> ${p.cantidad}</p>
+            <p class="${clase}"><b>Cantidad:</b> ${cantidad}</p>
 
-            <p><b>Precio:</b> $${p.precio}</p>
+            <p><b>Precio:</b> $${p["Precio unidad"]}</p>
 
         </div>
 
@@ -101,22 +75,24 @@ document.getElementById("buscar").addEventListener("input",function(){
 
     const texto=this.value.toLowerCase();
 
-    const resultado=inventario.filter(p=>
+    const filtrado=inventario.filter(p=>{
 
-        p.tipo.toLowerCase().includes(texto) ||
+        return (
 
-        p.detalle.toLowerCase().includes(texto) ||
+            (p["Tipo"] || "").toLowerCase().includes(texto) ||
 
-        p.referencia.toLowerCase().includes(texto) ||
+            (p["Detalle"] || "").toLowerCase().includes(texto) ||
 
-        p.marca.toLowerCase().includes(texto) ||
+            (p["Referencia"] || "").toLowerCase().includes(texto) ||
 
-        p.color.toLowerCase().includes(texto)
+            (p["Marca"] || "").toLowerCase().includes(texto) ||
 
-    );
+            (p["Color"] || "").toLowerCase().includes(texto)
 
-    mostrarProductos(resultado);
+        );
+
+    });
+
+    mostrarProductos(filtrado);
 
 });
-
-cargarInventario();
